@@ -1,0 +1,127 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  align-items: center;
+  background-color: #f5f5f5;
+  text-align: center;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+.form-signin .checkbox {
+  font-weight: 400;
+}
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.form-label::after {
+  display: none;
+}
+
+.form-check::after {
+  display: none;
+}
+
+.container {
+  text-align: left;
+  padding-top: 14px;
+}
+
+.footer {
+  width: 100%;
+  padding-bottom: 14px;
+}
+
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.selection {
+  width: 100%;
+  height: 100%;
+}
+
+.areaChangeForm {
+  width: 100%;
+}
+
+.areaChangeForm div {
+  width: 100%;
+}
+
+.select2-container {
+  width: 100%;
+}
+
+.view_entry #registrant_list {
+  padding-left: 0;
+}
+
+.table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.js_none {
+  display: none;
+}
+
+.mr-2,
+.mx-2 {
+  margin-right: 0.5rem !important;
+}
+
+.ml-2 {
+  margin-left: 0.5rem !important;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}
+
+div#rep_type div.long {
+  border: none;
+}
+
+fieldset#rep_info, fieldset#booking_controls {
+  border: none;
+}
+
+div#checks {
+  display: none;
+}
