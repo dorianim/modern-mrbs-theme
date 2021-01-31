@@ -89,6 +89,7 @@ body {
   display: block;
   overflow-x: auto;
   white-space: nowrap;
+  width: 100%;
 }
 
 .js_none {
@@ -124,4 +125,27 @@ fieldset#rep_info, fieldset#booking_controls {
 
 div#checks {
   display: none;
+}
+
+/*- ADMIN -*/
+#room_form form {
+  width: 100%;
+  padding: 0 0 2em 0;
+}
+
+.standard {
+  float: none;
+  margin-top: 2.0em;
+}
+
+div.datatable_container {
+  float: none;
+}
+
+div#area_form, div#room_form {
+  float: none;
+}
+
+.index .container {
+  width: 100%;
 }

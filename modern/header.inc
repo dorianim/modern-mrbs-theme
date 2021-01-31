@@ -459,7 +459,7 @@ function print_unsupported_message($context)
 {
   echo "<div class=\"unsupported_message\">\n";
   print_banner($context, $simple=true);
-  echo "<div class=\"contents\">\n";
+  echo "<div class=\"container\">\n";
   echo "<p>" . get_vocab('browser_not_supported', get_vocab('mrbs_abbr')) . "</p>\n";
   echo "</div>\n";
   echo "</div>\n";
@@ -601,7 +601,7 @@ function print_theme_header($context=null, $simple=false, $omit_login=false)
 
   // This <div> should really be moved out of here so that we can always see
   // the matching closing </div>
-  echo "<div class=\"contents\">\n";
+  echo "<div class=\"container\">\n";
 
 
 } // end of print_theme_header()
