@@ -1,7 +1,6 @@
 console.log("Hello :) Path: ", window.location.pathname)
 
 function patchElements(elements, patchFunction) {
-    //console.log("Now patching: ", elements)
     if (elements === null)
         return
 
@@ -12,22 +11,18 @@ function patchElements(elements, patchFunction) {
     }
 
     for (var element of copiedElements) {
-        //console.log("patching", i, " of", elements.length, ": ", element)
         patchFunction(element)
-        //console.log(".. done", element)
     }
-
-    //console.log("--- done ---")
 }
 
 function patchChildsByTagName(rootElement, tagName, patchFunction, recursive = true) {
-    if(!rootElement.childNodes.length > 0)
+    if (!rootElement.childNodes.length > 0)
         return null
 
     patchElements(rootElement.childNodes, childNode => {
-        if(childNode.nodeName === tagName.toUpperCase())
+        if (childNode.nodeName === tagName.toUpperCase())
             patchFunction(childNode)
-        else if(recursive) {
+        else if (recursive) {
             patchChildsByTagName(childNode, tagName, patchFunction, recursive)
         }
     })
@@ -40,58 +35,66 @@ function patchForm(form, onlyCollapseFieldsetsWithId = true, dontCollapseFirstFi
     var firstFieldsetIsDone = false;
     patchElements(form.childNodes, fieldset => {
         if (fieldset.nodeName === "FIELDSET") {
-            var fieldsetName = null
-            // patch all elements in the fieldset
-            patchElements(fieldset.childNodes, formGroup => {
-                if (formGroup.nodeName === "DIV" && !(formGroup.classList && (formGroup.classList.contains("none") || formGroup.classList.contains("js_none")))) {
-                    formGroup.className = "mb-3"
-                    patchElements(formGroup.childNodes, formElement => {
-                        patchFormElement(formElement)
-                    })
-                }
-                else if (formGroup.nodeName === "LEGEND" && !onlyCollapseFieldsetsWithId) {
-                    patchElements(formGroup.childNodes, childNode => {
-                        if(childNode.nodeName !== "#text")
-                            childNode.outerHTML = ""
-                    })
-                    fieldsetName = formGroup.innerHTML
-                    formGroup.outerHTML = ""
-                }
-            })
-
-            // Make the fieldset collapsable
-            var fieldsetNames = {
-                "registration": "Registrierung",
-                "rep_info": "Serieneinstellungen"
-            }
-
-            if (onlyCollapseFieldsetsWithId) {
-                fieldsetName = fieldsetNames[fieldset.id]
-            }
-
-            if(fieldsetName) {
-                if (!dontCollapseFirstFieldset || firstFieldsetIsDone) {
-                    var mocId = fieldsetName.replaceAll(" ", "_").replaceAll("(", "").replaceAll(")", "");
-                    fieldset.outerHTML = `
-                    <div class="card mb-4">
-                    <div class="card-header" id="heading` + mocId + `">
-                    <h5 class="mb-0">
-                      <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapse` + mocId + `" aria-expanded="true" aria-controls="collapse` + fieldset.id + `">
-                        ` + fieldsetName + `
-                      </button>
-                    </h5>
-                  </div>
-              
-                  <div id="collapse` + mocId + `" class="collapse" aria-labelledby="heading` + mocId + `">
-                    <div class="card card-body">` + fieldset.innerHTML + `</div>
-                    </div>
-                  </div></div>`
-                }
-
+            console.log(fieldset)
+            patchFormFieldset(fieldset, onlyCollapseFieldsetsWithId, !dontCollapseFirstFieldset || firstFieldsetIsDone, 0)
+            if (fieldset.childNodes.length > 2)
                 firstFieldsetIsDone = true
-            }
         }
     })
+}
+
+function patchFormFieldset(fieldset, onlyCollapseFieldsetsWithId = true, collapse = true, depth = 0) {
+    var fieldsetName = null
+    // patch all elements in the fieldset
+    patchElements(fieldset.childNodes, formGroup => {
+        if ((formGroup.nodeName === "DIV") && !(formGroup.classList && (formGroup.classList.contains("none") || formGroup.classList.contains("js_none")))) {
+            formGroup.className = "mb-3"
+            patchElements(formGroup.childNodes, formElement => {
+                patchFormElement(formElement)
+            })
+        }
+        else if (formGroup.nodeName === "LEGEND" && !onlyCollapseFieldsetsWithId) {
+            patchElements(formGroup.childNodes, childNode => {
+                if (childNode.nodeName !== "#text")
+                    childNode.outerHTML = ""
+            })
+            fieldsetName = formGroup.innerHTML
+            formGroup.outerHTML = ""
+        }
+        else if (formGroup.nodeName === "FIELDSET") {
+            patchFormFieldset(formGroup, onlyCollapseFieldsetsWithId, true, depth + 1)
+        }
+    })
+
+    // Make the fieldset collapsable
+    var fieldsetNames = {
+        "registration": "Registrierung",
+        "rep_info": "Serieneinstellungen"
+    }
+
+    if (onlyCollapseFieldsetsWithId) {
+        fieldsetName = fieldsetNames[fieldset.id]
+    }
+
+    if (fieldsetName) {
+        if (collapse) {
+            var mocId = fieldsetName.replaceAll(" ", "_").replaceAll("(", "").replaceAll(")", "");
+            fieldset.outerHTML = `
+            <div class="card mb-4">
+            <div class="card-header" id="heading` + mocId + `">
+            <h5 class="mb-0">
+              <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapse` + mocId + `" aria-expanded="true" aria-controls="collapse` + fieldset.id + `">
+                ` + fieldsetName + `
+              </button>
+            </h5>
+          </div>
+
+          <div id="collapse` + mocId + `" class="collapse" aria-labelledby="heading` + mocId + `">
+            <div class="card card-body">` + fieldset.innerHTML + `</div>
+            </div>
+          </div></div>`
+        }
+    }
 }
 
 function patchFormElement(formElement, depth = 0) {
@@ -122,7 +125,7 @@ function patchFormElement(formElement, depth = 0) {
         formElement.className = "form-select"
     else if (formElement.nodeName === "DIV") {
         patchElements(formElement.childNodes, childElement => patchFormElement(childElement, depth + 1))
-        formElement.className = "row mr-0"
+        formElement.className = "row ms-1 mr-0"
         formElement.setAttribute("width", "100%")
     }
 
@@ -131,31 +134,39 @@ function patchFormElement(formElement, depth = 0) {
     else if (formElement.id === "name")
         formElement.setAttribute("value", mrbs_user.displayName)
 
-    if (depth > 0)
-        formElement.outerHTML = `<div class="col-md-6 mb-2">` + formElement.outerHTML + `</div>`
+    if (depth > 0) {
+        if (formElement.type === "checkbox")
+            formElement.outerHTML = `<div class="col-md-1 mb-2 form-check form-switch">` + formElement.outerHTML + `</div>`
+        else
+            formElement.outerHTML = `<div class="col mb-2">` + formElement.outerHTML + `</div>`
+    }
 }
 
 function patchLoginPage() {
     if (!document.getElementById("logon"))
         return
+
     var loginForm = document.getElementById("logon");
-        loginForm.className = "form-signin";
+    loginForm.className = "form-signin";
 
-        var formLabels = document.getElementsByTagName("label")
+    var formLabels = document.getElementsByTagName("label")
 
-        for (i = 0; i < formLabels.length; i++)
-            formLabels[i].className = "visually-hidden"
+    for (i = 0; i < formLabels.length; i++)
+        formLabels[i].className = "visually-hidden"
 
-        var formInputs = document.getElementsByTagName("input")
+    var formInputs = document.getElementsByTagName("input")
 
-        for (i = 0; i < formInputs.length; i++)
-            if (formInputs[i].type === "submit")
-                formInputs[i].className = "w-100 btn btn-lg btn-primary"
+    for (i = 0; i < formInputs.length; i++)
+        if (formInputs[i].type === "submit")
+            formInputs[i].className = "w-100 btn btn-lg btn-primary"
 
-        document.getElementById("password").placeholder = "Passwort"
+    document.getElementById("password").placeholder = "Passwort"
 
-        var headerLabel = document.getElementsByTagName("legend")[0]
-        headerLabel.outerHTML = "<h1 class=\"h3 mb-3 fw-normal\">" + headerLabel.innerHTML + "</h1>"
+    var headerLabel = document.getElementsByTagName("legend")[0]
+    headerLabel.outerHTML = "<h1 class=\"h3 mb-3 fw-normal\">" + headerLabel.innerHTML + "</h1>"
+
+    loginForm.innerHTML = '<img class="mb-4" src="/Themes/modern/assets/booking_black.png" alt="" height="150" >' + loginForm.innerHTML;
+    loginForm.parentElement.outerHTML = loginForm.parentElement.innerHTML
 }
 
 function patchMainPage() {
@@ -250,9 +261,10 @@ function patchViewEntry() {
     if (window.location.pathname !== "/view_entry.php")
         return
 
-    document.getElementById("returl").outerHTML = ""
+    if (document.getElementById("returl"))
+        document.getElementById("returl").outerHTML = ""
 
-    patchElements(document.getElementById("username"), element => element.parentElement.style = "display: none")
+    patchElements(document.getElementById("username"), element => element.parentElement.parentElement.style = "display: none")
 
     // patch table
     patchElements(document.getElementsByTagName("table"), table => {
@@ -268,8 +280,23 @@ function patchViewEntry() {
             else {
                 row.deleteCell(2)
             }
+
+            patchChildsByTagName(row.cells[0], "input", input => {
+                if (input.type === "submit") {
+                    var newButton = document.createElement('button');
+                    newButton.innerHTML = "<span class=\"mr-2\" data-feather=\"trash\"></span>" + input.value;
+                    newButton.onclick = input.onclick
+                    newButton.type = "submit"
+                    newButton.className = "btn btn-outline-danger"
+                    input.parentElement.appendChild(newButton);
+                    input.outerHTML = ""
+                }
+            })
+
         }
     })
+
+    // For delete button: <span class=\"mr-2\" data-feather=\"trash\"></span>
 
     // remove copy button
     patchElements(document.getElementsByName("copy"), element => {
@@ -291,23 +318,23 @@ function patchAdministration() {
         if (form.classList && form.classList.contains("areaChangeForm")) {
             // move the edit and delet buttons in place and patch them
             patchElements(form.childNodes, fieldset => {
-                if(fieldset.nodeName === "FIELDSET")
-                patchElements(fieldset.childNodes, childNode => {
-                    console.log(childNode.nodeName)
-                    if (childNode.nodeName === "BUTTON") {
-                        var innerIcon = ""
-                        if (childNode.childNodes[1] && childNode.childNodes[1].src && childNode.childNodes[1].src.includes("edit")) {
-                            childNode.className = "btn btn-outline-secondary mr-2 mb-2"
-                            innerIcon = "edit"
-                        }
-                        else {
-                            childNode.className = "btn btn-outline-danger mr-2 mb-2"
-                            innerIcon = "trash"
-                        }
+                if (fieldset.nodeName === "FIELDSET")
+                    patchElements(fieldset.childNodes, childNode => {
+                        console.log(childNode.nodeName)
+                        if (childNode.nodeName === "BUTTON") {
+                            var innerIcon = ""
+                            if (childNode.childNodes[1] && childNode.childNodes[1].src && childNode.childNodes[1].src.includes("edit")) {
+                                childNode.className = "btn btn-outline-secondary mr-2 mb-2"
+                                innerIcon = "edit"
+                            }
+                            else {
+                                childNode.className = "btn btn-outline-danger mr-2 mb-2"
+                                innerIcon = "trash"
+                            }
 
-                        childNode.innerHTML = "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + childNode.title
-                    }
-                })
+                            childNode.innerHTML = "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + childNode.title
+                        }
+                    })
             })
         }
         patchForm(form, false)
@@ -320,14 +347,14 @@ function patchAdministration() {
         patchChildsByTagName(row.cells[0], "span", span => span.className = "none")
         patchChildsByTagName(row.cells[1], "div", div => {
             console.log(div.childNodes)
-            if(div.innerHTML.length > 10)
+            if (div.innerHTML.length > 10)
                 div.innerHTML = "<span class=\"mr-2\" data-feather=\"check-square\"></span>"
             else
                 div.innerHTML = "<span class=\"mr-2\" data-feather=\"x-square\"></span>"
         })
-        
+
         patchChildsByTagName(row.cells[6], "input", input => {
-            if(input.classList && input.classList.contains("button"))
+            if (input.classList && input.classList.contains("button"))
                 input.outerHTML = input.outerHTML.replaceAll("input", "button")
         })
 
@@ -354,7 +381,7 @@ function patchEditArea() {
 
     patchElements(document.getElementsByClassName("btn-outline-dark"), button => {
         // remove back button
-        if(button.getAttribute("formaction") === "admin.php")
+        if (button.getAttribute("formaction") === "admin.php")
             button.outerHTML = ""
     })
 }
@@ -371,7 +398,7 @@ function patchEditRoom() {
 
     patchElements(document.getElementsByClassName("btn-outline-dark"), button => {
         // remove back button
-        if(button.getAttribute("formaction") === "admin.php")
+        if (button.getAttribute("formaction") === "admin.php")
             button.outerHTML = ""
     })
 }
@@ -381,7 +408,7 @@ function patchImport() {
         return
 
     patchElements(document.getElementsByTagName("form"), form => {
-        if(form.getAttribute("action") == "import.php") {
+        if (form.getAttribute("action") == "import.php") {
             patchChildsByTagName(form, "fieldset", fieldset => {
                 fieldset.outerHTML = fieldset.innerHTML
             }, false)
@@ -395,12 +422,12 @@ function patchReport() {
     if (window.location.pathname !== "/report.php")
         return
 
-        patchChildsByTagName(document.getElementById("report_form"), "fieldset", fieldset => {
-            fieldset.outerHTML = fieldset.innerHTML
-        }, false)
-    
-        patchForm(document.getElementById("report_form"))
-        
+    patchChildsByTagName(document.getElementById("report_form"), "fieldset", fieldset => {
+        fieldset.outerHTML = fieldset.innerHTML
+    }, false)
+
+    patchForm(document.getElementById("report_form"))
+
 }
 
 function patchSiteStructure() {
@@ -424,18 +451,21 @@ function patchSiteStructure() {
     }
 
     patchLoginPage()
-patchMainPage()
-patchEditEntry()
-patchViewEntry()
-patchAdministration()
-patchEditArea()
-patchEditRoom()
-patchImport()
-patchReport()
-
+    patchMainPage()
+    patchEditEntry()
+    patchViewEntry()
+    patchAdministration()
+    patchEditArea()
+    patchEditRoom()
+    patchImport()
+    patchReport()
 }
 
-// this runs before jquery
-patchSiteStructure()
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('/mrbs-modern-pwa-serviceWorker.js')
+        .then(() => { console.log('Service Worker Registered'); });
+}
 
+patchSiteStructure()
 feather.replace()
