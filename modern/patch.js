@@ -102,7 +102,10 @@ function patchFormElement(formElement, depth = 0) {
         return
 
     if (formElement.nodeName === "LABEL") {
-        if (formElement.childNodes[0] && (formElement.childNodes[0].type === "checkbox" || formElement.childNodes[0].type === "radio")) {
+        if(formElement.innerHTML.length < 1) {
+            formElement.outerHTML = ""
+        }
+        else if (formElement.childNodes[0] && (formElement.childNodes[0].type === "checkbox" || formElement.childNodes[0].type === "radio")) {
             patchElements(formElement.childNodes, childElement => patchFormElement(childElement))
         }
         else
@@ -378,11 +381,13 @@ function patchViewEntry() {
         })
     })
 
-    // make "You are registered for this event" a nice green banner
-    patchElements(document.getElementById("registration").childNodes, child => {
+    // make "You are registered for this event" and "This event is full" a nice banner
+    var registrationContainer = document.getElementById("registration");
+    if(registrationContainer)
+    patchElements(registrationContainer.childNodes, child => {
         if (child.nodeName === "P") {
             child.outerHTML = `
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-primary" role="alert">
                 ` + child.innerHTML + `
             </div>`
         }

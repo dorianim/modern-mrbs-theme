@@ -95,9 +95,6 @@ body {
   width: 100%;
 }
 
-.row > * {
-  padding-left: 0;
-}
 
 .js_none {
   display: none;
