@@ -286,7 +286,7 @@ function patchMainPage() {
     })
 
     // scroll table
-    document.getElementsByClassName("table_container")[0].scroll({ top: 500, left: 0, behavior: "smooth" })
+    document.getElementsByClassName("table_container")[0].scroll({ top: 500, left: 0 })
 }
 
 function patchEditEntry() {
@@ -341,7 +341,7 @@ function patchViewEntry() {
             innerIcon = "edit"
             patchParents = true
         }
-        else if(form.getAttribute("action").startsWith("edit_entry.php") && count >= 2) {
+        else if (form.getAttribute("action").startsWith("edit_entry.php") && count >= 2) {
             className = "btn btn-outline-secondary mr-2 mb-2"
             innerIcon = "copy"
             patchParents = true
@@ -355,7 +355,7 @@ function patchViewEntry() {
             className = "btn btn-outline-success mr-2 mb-2"
             innerIcon = "plus-circle"
         }
-        else if(form.getAttribute("action") === "registration_handler.php" && form.parentElement.id !== "registration") {
+        else if (form.getAttribute("action") === "registration_handler.php" && form.parentElement.id !== "registration") {
             className = "btn btn-outline-danger mr-2 mb-2"
             innerIcon = "trash"
         }
@@ -363,12 +363,12 @@ function patchViewEntry() {
             return
         }
 
-        if(patchParents) {
+        if (patchParents) {
             form.parentElement.className = "col-sm-6"
             form.parentElement.parentElement.className = "row"
         }
 
-        count ++;
+        count++;
 
         patchChildsByTagName(form, "input", formInput => {
             if (formInput.type === "submit") {
@@ -380,7 +380,7 @@ function patchViewEntry() {
 
     // make "You are registered for this event" a nice green banner
     patchElements(document.getElementById("registration").childNodes, child => {
-        if(child.nodeName === "P") {
+        if (child.nodeName === "P") {
             child.outerHTML = `
             <div class="alert alert-success" role="alert">
                 ` + child.innerHTML + `
@@ -528,6 +528,34 @@ function patchSearch() {
     var table = document.getElementById("search_results")
     if (table)
         table.className = "table table-bordered table-hover table-striped"
+
+        var count = 0
+    patchElements(document.getElementById("record_nav").getElementsByTagName("form"), form => {
+        var innerIcon = ""
+        var className = ""
+        var placeIconRight = false
+        if (count === 0) {
+            className = "btn btn-outline-secondary mr-2 mb-2"
+            innerIcon = "chevron-left"
+        }
+        else {
+            className = "btn btn-outline-secondary mr-2 mb-2"
+            innerIcon = "chevron-right"
+            placeIconRight = true
+        }
+
+        count++;
+
+        patchElements(form.childNodes, formInput => {
+            if (formInput.type === "submit") {
+                formInput.className = className
+                if(placeIconRight)    
+                    formInput.outerHTML = inputToButton(formInput, formInput.value + "<span class=\"ml-2\" data-feather=\"" + innerIcon + "\"></span>")
+                else
+                    formInput.outerHTML = inputToButton(formInput, "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + formInput.value)
+            }
+        })
+    })
 }
 
 function patchSiteStructure() {
