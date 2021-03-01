@@ -4,6 +4,7 @@ body {
 }
 
 body {
+  padding-top: 4.5rem;
   align-items: center;
   background-color: #f5f5f5;
   text-align: center;
@@ -48,7 +49,8 @@ body {
 
 .container {
   text-align: left;
-  padding-top: 14px;
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
 }
 
 .footer {
@@ -86,10 +88,15 @@ body {
 }
 
 .table {
+  table-layout: fixed;
   display: block;
   overflow-x: auto;
   white-space: nowrap;
   width: 100%;
+}
+
+.row > * {
+  padding-left: 0;
 }
 
 .js_none {
@@ -142,10 +149,22 @@ div.datatable_container {
   float: none;
 }
 
+td, th {
+	vertical-align: middle;
+}
+
 div#area_form, div#room_form {
   float: none;
 }
 
 .index .container {
   width: 100%;
+}
+
+.minicalendars {
+  display: none;
+}
+
+.view_entry #registration .standard fieldset > div > label {
+  display: none;
 }

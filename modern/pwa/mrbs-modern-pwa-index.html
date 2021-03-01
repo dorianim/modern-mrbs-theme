@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="mrbs-modern-pwa-manifest.webmanifest">
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('/mrbs-modern-pwa-serviceWorker.js')
+          .then(() => { console.log('Service Worker Registered'); });
+      }
+    </script>
+
+    <title>Loading ...</title>
+
+  </head>
+  <body>
+    <h1>Loading ...</h1>
+
+    <a href="/index.php">Click here if nothing happens</a>
+
+    <script>
+      window.location.href = '/index.php';
+    </script>
+  </body>
+</html>

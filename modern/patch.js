@@ -142,9 +142,41 @@ function patchFormElement(formElement, depth = 0) {
     }
 }
 
+function inputToButton(inputElement, innerHTML, extraAttributes = "") {
+    if (inputElement.onclick) {
+        extraAttributes = `onclick="` + inputElement.onclick.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1] + `" ` + extraAttributes
+    }
+    return `
+    <button type="` + inputElement.type + `" class="` + inputElement.className + `" ` + extraAttributes + ` >
+    ` + innerHTML + `
+    </button>
+    `
+}
+
+function patchHeader() {
+    for (formId of ["header_goto_date", "header_search", "header_logonoff"]) {
+        var form = document.getElementById(formId)
+        if (!form)
+            continue
+        form.className = "d-flex mx-lg-1 mb-2 mb-lg-0"
+        patchChildsByTagName(form, "input", element => {
+            if (element.type === "search" || element.type === "date") {
+                element.className = "form-control mx-auto"
+            }
+            else if (element.type === "submit" && !element.classList.contains("js_none")) {
+                element.className = "btn btn-outline-light mx-auto w-100"
+            }
+        })
+    }
+}
+
 function patchLoginPage() {
     if (!document.getElementById("logon"))
         return
+
+    document.getElementById("header_navbar").outerHTML = ""
+    document.getElementById("footer").outerHTML = ""
+    document.getElementsByTagName("body")[0].style = "display: flex;"
 
     var loginForm = document.getElementById("logon");
     loginForm.className = "form-signin";
@@ -165,8 +197,18 @@ function patchLoginPage() {
     var headerLabel = document.getElementsByTagName("legend")[0]
     headerLabel.outerHTML = "<h1 class=\"h3 mb-3 fw-normal\">" + headerLabel.innerHTML + "</h1>"
 
-    loginForm.innerHTML = '<img class="mb-4" src="/Themes/modern/assets/booking_black.png" alt="" height="150" >' + loginForm.innerHTML;
-    loginForm.parentElement.outerHTML = loginForm.parentElement.innerHTML
+    for (element of loginForm.getElementsByTagName("p")) {
+        element.outerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>` + element.innerHTML + `</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`
+    }
+
+    loginForm.innerHTML = '<img class="mb-4" src="/Themes/modern/assets/booking_black.png" alt="" height="150" >'
+        + loginForm.innerHTML
+        + '<p class="mt-5 mb-3 text-muted">Gerätereservierung des MakerLab Murnau e.V.</p>';
+    loginForm.parentElement.className = "form-signin"
 }
 
 function patchMainPage() {
@@ -175,10 +217,12 @@ function patchMainPage() {
 
     // patch calendar
     var currentDateElement = document.getElementsByClassName("date")[0]
+    if (!currentDateElement)
+        return
     var currentDate = currentDateElement.innerHTML
 
     patchElements(document.getElementsByClassName("main_calendar"), element => {
-        element.outerHTML = "<div class=\"d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom\">"
+        element.outerHTML = "<div class=\"d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom\">"
             + "<h2 class=\"h2\" >" + currentDate + "</h1>"
             + "<div class=\"btn-toolbar mb-2 mb-md-0 flex-wrap\" role=\"toolbar\">" + element.innerHTML + "</div></div>"
 
@@ -240,6 +284,9 @@ function patchMainPage() {
 
         element.outerHTML = "<div class=\"btn-group col-auto col-md-0 mr-2 mb-2 mb-md-0\" role=\"group\">" + element.innerHTML + "</div>"
     })
+
+    // scroll table
+    document.getElementsByClassName("table_container")[0].scroll({ top: 500, left: 0, behavior: "smooth" })
 }
 
 function patchEditEntry() {
@@ -280,29 +327,68 @@ function patchViewEntry() {
             else {
                 row.deleteCell(2)
             }
-
-            patchChildsByTagName(row.cells[0], "input", input => {
-                if (input.type === "submit") {
-                    var newButton = document.createElement('button');
-                    newButton.innerHTML = "<span class=\"mr-2\" data-feather=\"trash\"></span>" + input.value;
-                    newButton.onclick = input.onclick
-                    newButton.type = "submit"
-                    newButton.className = "btn btn-outline-danger"
-                    input.parentElement.appendChild(newButton);
-                    input.outerHTML = ""
-                }
-            })
-
         }
     })
 
-    // For delete button: <span class=\"mr-2\" data-feather=\"trash\"></span>
+    // add icons to buttons
+    var count = 0;
+    patchElements(document.getElementsByTagName("form"), form => {
+        var innerIcon = ""
+        var className = ""
+        var patchParents = false
+        if (form.getAttribute("action").startsWith("edit_entry.php") && count <= 2) {
+            className = "btn btn-outline-secondary mr-2 mb-2"
+            innerIcon = "edit"
+            patchParents = true
+        }
+        else if(form.getAttribute("action").startsWith("edit_entry.php") && count >= 2) {
+            className = "btn btn-outline-secondary mr-2 mb-2"
+            innerIcon = "copy"
+            patchParents = true
+        }
+        else if (form.getAttribute("action").startsWith("del_entry.php")) {
+            className = "btn btn-outline-danger mr-2 mb-2"
+            innerIcon = "trash"
+            patchParents = true
+        }
+        else if (form.getAttribute("action") === "registration_handler.php" && form.parentElement.id === "registration") {
+            className = "btn btn-outline-success mr-2 mb-2"
+            innerIcon = "plus-circle"
+        }
+        else if(form.getAttribute("action") === "registration_handler.php" && form.parentElement.id !== "registration") {
+            className = "btn btn-outline-danger mr-2 mb-2"
+            innerIcon = "trash"
+        }
+        else {
+            return
+        }
 
-    // remove copy button
-    patchElements(document.getElementsByName("copy"), element => {
-        element.parentElement.parentElement.parentElement.outerHTML = ""
+        if(patchParents) {
+            form.parentElement.className = "col-sm-6"
+            form.parentElement.parentElement.className = "row"
+        }
+
+        count ++;
+
+        patchChildsByTagName(form, "input", formInput => {
+            if (formInput.type === "submit") {
+                formInput.className = className
+                formInput.outerHTML = inputToButton(formInput, "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + formInput.value)
+            }
+        })
     })
 
+    // make "You are registered for this event" a nice green banner
+    patchElements(document.getElementById("registration").childNodes, child => {
+        if(child.nodeName === "P") {
+            child.outerHTML = `
+            <div class="alert alert-success" role="alert">
+                ` + child.innerHTML + `
+            </div>`
+        }
+    })
+
+    // delete export buttons
     patchElements(document.getElementsByName("action"), element => {
         if (element.value === "export") {
             element.parentElement.parentElement.parentElement.outerHTML = ""
@@ -428,6 +514,20 @@ function patchReport() {
 
     patchForm(document.getElementById("report_form"))
 
+    var table = document.getElementById("report_table")
+    if (table)
+        table.className = "table table-bordered table-hover table-striped"
+}
+
+function patchSearch() {
+    if (window.location.pathname !== "/search.php")
+        return
+
+    patchForm(document.getElementById("search_form"))
+
+    var table = document.getElementById("search_results")
+    if (table)
+        table.className = "table table-bordered table-hover table-striped"
 }
 
 function patchSiteStructure() {
@@ -436,6 +536,7 @@ function patchSiteStructure() {
     var buttons = document.getElementsByTagName('input'),
         len = buttons !== null ? buttons.length : 0,
         i = 0;
+
     for (i; i < len; i++) {
         if (buttons[i].type === "submit")
             if (buttons[i].classList.contains("default_action"))
@@ -459,6 +560,44 @@ function patchSiteStructure() {
     patchEditRoom()
     patchImport()
     patchReport()
+    patchSearch()
+    patchHeader()
+
+    var forms = document.getElementsByTagName('form')
+
+    for (const form of forms) {
+        var formInputs = form.getElementsByTagName("input");
+        for (const button of formInputs) {
+            if (button.type === "submit") {
+                form.addEventListener("submit", () => {
+                    button.outerHTML = `
+              <button type="submit" class="` + button.className + `" disabled>
+              ` + button.value + `
+              <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+              </button>
+              `
+                })
+            }
+        }
+
+        var formButtons = form.getElementsByTagName("button");
+        for (const button of formButtons) {
+            if (button.type === "submit") {
+                form.addEventListener("submit", () => {
+                    console.log(button)
+                    button.innerHTML += ' <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>'
+                    button.disabled = true
+                })
+            }
+        }
+
+        var formInputs = form.getElementsByTagName("input")
+        for (const input of formInputs) {
+            form.addEventListener("submit", () => {
+                input.readonly = true
+            })
+        }
+    }
 }
 
 if ('serviceWorker' in navigator) {
