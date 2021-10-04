@@ -10,7 +10,7 @@ use MRBS\Form\ElementInputSubmit;
 
 function print_head($simple)
 {
-  global $refresh_rate;
+  global $refresh_rate, $mrbs_company_logo;
 ?>
 
   <head>
@@ -45,9 +45,8 @@ function print_head($simple)
 
     <?php require_once MRBS_ROOT . "/style.inc"; ?>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link href="Themes/modern/static/bootstrap.min.css" rel="stylesheet">
     <link href="Themes/modern/style.css" rel="stylesheet">
-    <script src="https://unpkg.com/feather-icons"></script>
 
     <title><?= get_vocab("mrbs") ?></title>
 
@@ -57,6 +56,7 @@ function print_head($simple)
         mrbs_user.displayName = "<?= session()->getCurrentUser()->display_name ?>";
         mrbs_user.isAdmin = " <?= is_admin() ? "true" : "false" ?>";
       <?php endif; ?>
+      var mrbs_company_logo = "<?= $mrbs_company_logo ?>";
     </script>
 
   </head>
@@ -111,7 +111,7 @@ function print_header_site_info()
 
 function print_menu_items($context)
 {
-  global $disable_room_menu_for_non_admins;
+  global $disable_menu_items_for_non_admins, $auth;
 
   $query = build_query($context);
 
@@ -119,12 +119,18 @@ function print_menu_items($context)
     'report' => 'report.php',
     'import' => 'import.php',
     'rooms'  => 'admin.php'
-  ); ?>
+  ); 
+  
+  if ($auth['type'] == 'db')
+  {
+    $menu_items['user_list'] = 'edit_users.php';
+  }
+  ?>
 
   <ul class="navbar-nav ml-auto" style="margin-left: auto !important;">
 
     <?php foreach ($menu_items as $token => $page) :
-      if ($page === "admin.php" && !is_admin() && $disable_room_menu_for_non_admins)
+      if (!is_admin() && in_array($token, $disable_menu_items_for_non_admins))
         continue;
 
       if (checkAuthorised($page, true)) : ?>

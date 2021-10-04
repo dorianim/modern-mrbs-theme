@@ -208,7 +208,7 @@ function patchLoginPage() {
         </div>`
     }
 
-    loginForm.innerHTML = '<img class="mb-4" src="/Themes/modern/assets/booking_black.png" alt="" height="150" >'
+    loginForm.innerHTML = '<img class="mb-4" src="' + mrbs_company_logo + '" alt="" height="150" >'
         + loginForm.innerHTML
         + '<p class="mt-5 mb-3 text-muted">Gerätereservierung des MakerLab Murnau e.V.</p>';
     loginForm.parentElement.className = "form-signin"
@@ -300,7 +300,7 @@ function patchEditEntry() {
     form.parentElement.className = "container"
     form.className = ""
 
-    // remove byck button
+    // remove back button
     document.getElementsByName("back_button")[0].outerHTML = ""
     document.getElementById("checks").outerHTML = ""
 
@@ -432,31 +432,33 @@ function patchAdministration() {
     })
 
     var table = document.getElementById("rooms_table")
-    table.className = "table table-bordered table-hover table-striped"
-    var rows = table.rows
-    for (var row of rows) {
-        patchChildsByTagName(row.cells[0], "span", span => span.className = "none")
-        patchChildsByTagName(row.cells[1], "div", div => {
-            console.log(div.childNodes)
-            if (div.innerHTML.length > 10)
-                div.innerHTML = "<span class=\"mr-2\" data-feather=\"check-square\"></span>"
-            else
-                div.innerHTML = "<span class=\"mr-2\" data-feather=\"x-square\"></span>"
-        })
+    if(table) {
+        table.className = "table table-bordered table-hover table-striped"
+        var rows = table.rows
+        for (var row of rows) {
+            patchChildsByTagName(row.cells[0], "span", span => span.className = "none")
+            patchChildsByTagName(row.cells[1], "div", div => {
+                console.log(div.childNodes)
+                if (div.innerHTML.length > 10)
+                    div.innerHTML = "<span class=\"mr-2\" data-feather=\"check-square\"></span>"
+                else
+                    div.innerHTML = "<span class=\"mr-2\" data-feather=\"x-square\"></span>"
+            })
 
-        patchChildsByTagName(row.cells[6], "input", input => {
-            if (input.classList && input.classList.contains("button"))
-                input.outerHTML = input.outerHTML.replaceAll("input", "button")
-        })
+            patchChildsByTagName(row.cells[6], "input", input => {
+                if (input.classList && input.classList.contains("button"))
+                    input.outerHTML = input.outerHTML.replaceAll("input", "button")
+            })
 
-        patchChildsByTagName(row.cells[6], "button", input => {
-            input.src = ""
-            input.type = "button"
-            input.className = "btn btn-outline-danger"
-            input.innerHTML = "<span class=\"mr-2\" data-feather=\"trash\"></span>" + input.title
-        })
+            patchChildsByTagName(row.cells[6], "button", input => {
+                input.src = ""
+                input.type = "button"
+                input.className = "btn btn-outline-danger"
+                input.innerHTML = "<span class=\"mr-2\" data-feather=\"trash\"></span>" + input.title
+            })
 
-        row.cells[6].innerHTML.replaceAll("class=\"button\"", "class=\"btn\"")
+            row.cells[6].innerHTML.replaceAll("class=\"button\"", "class=\"btn\"")
+        }
     }
 }
 
@@ -563,6 +565,49 @@ function patchSearch() {
     })
 }
 
+function patchEditUsers() {
+    if (window.location.pathname !== "/edit_users.php")
+        return
+
+    var editUsersForm = document.getElementById("form_edit_users")
+    if(editUsersForm) {
+        // remove back button
+        document.getElementsByName("back_button")[0].outerHTML = ""
+
+        console.log("Found edit user form!")
+        editUsersForm.className = ""
+
+        patchForm(editUsersForm, true)
+
+        var update_button = document.getElementById("update_button")
+        editUsersForm.innerHTML += "<input type=\"hidden\" name=\"update_button\" value=\"" + update_button.value + "\">"
+
+        patchElements(document.getElementsByClassName("error"), errorMessage => {
+            errorMessage.className = "alert alert-danger"
+            errorMessage.tagName = "div"
+        })
+    }
+
+    var addNewUserForm = document.getElementById("add_new_user")
+    if(addNewUserForm) {
+        console.log("Found add new user form!")
+        patchForm(addNewUserForm)
+
+        var table = document.getElementById("users_table")
+        if (table)
+            table.className = "table table-bordered table-hover table-striped"
+    }
+}
+
+function patchResetPassword() {
+    if (window.location.pathname !== "/reset_password.php")
+        return
+
+    var form = document.getElementById("lost_password")
+    if(form)
+        patchForm(form, true)
+}
+
 function patchSiteStructure() {
 
     // general patch of standard elements
@@ -595,6 +640,8 @@ function patchSiteStructure() {
     patchReport()
     patchSearch()
     patchHeader()
+    patchEditUsers()
+    patchResetPassword()
 
     var forms = document.getElementsByTagName('form')
 
