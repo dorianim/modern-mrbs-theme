@@ -1,15 +1,15 @@
 {
     "background_color": "white",
-    "description": "Geraete Reservierung im MakerLab :)",
+    "description": "@@description@@",
     "display": "standalone",
     "icons": [
       {
-        "src": "Themes/modern/assets/icon.png",
+        "src": "@@icon.src@@",
         "sizes": "512x512",
         "type": "image/png"
       }
     ],
-    "name": "MakerLab Gerätereserierung",
-    "short_name": "Gerätereservierung",
+    "name": "@@name@@",
+    "short_name": "@@short_name@@",
     "start_url": "/mrbs-modern-pwa-index.html"
   }
