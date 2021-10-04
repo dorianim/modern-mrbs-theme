@@ -210,7 +210,7 @@ function patchLoginPage() {
 
     loginForm.innerHTML = '<img class="mb-4" src="' + mrbs_company_logo + '" alt="" height="150" >'
         + loginForm.innerHTML
-        + '<p class="mt-5 mb-3 text-muted">Gerätereservierung des MakerLab Murnau e.V.</p>';
+        + '<p class="mt-5 mb-3 text-muted">' + mrbs_company + ' ' + vocab.mrbs + '</p>';
     loginForm.parentElement.className = "form-signin"
 }
 

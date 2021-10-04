@@ -10,7 +10,7 @@ use MRBS\Form\ElementInputSubmit;
 
 function print_head($simple)
 {
-  global $refresh_rate, $mrbs_company_logo;
+  global $refresh_rate, $mrbs_company_logo, $mrbs_company;
 ?>
 
   <head>
@@ -57,6 +57,10 @@ function print_head($simple)
         mrbs_user.isAdmin = " <?= is_admin() ? "true" : "false" ?>";
       <?php endif; ?>
       var mrbs_company_logo = "<?= $mrbs_company_logo ?>";
+      var mrbs_company = "<?= $mrbs_company ?>";
+      var vocab = {};
+      vocab["mrbs"] = "<?= get_vocab("mrbs") ?>";
+      
     </script>
 
   </head>
