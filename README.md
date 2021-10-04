@@ -20,29 +20,29 @@ To use this theme, place it into the Themes folder of your mrbs. (eg. `/var/www/
 * This theme is a quick and dirty workaround. As MRBS does not have a real theme engine, it simply injects JavaScript which then modifies the page after it is loaded.
 * Some pages may not work in certain scenarios!
 
-# Screenshots
+# .github/media
 <table align="center">
     <tr>
         <td align="center">
-            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/dayView.png">
-                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/dayView.png" alt="Days" width="500px" />
+            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/dayView.png">
+                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/dayView.png" alt="Days" width="500px" />
             </a>
         </td>
         <td align="center">
-            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/login.png">
-                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/login.png" alt="Login" width="500px" />
+            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/login.png">
+                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/login.png" alt="Login" width="500px" />
             </a>
         </td>
     </tr>
     <tr>
         <td align="center">
-            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/createEntry.png">
-                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/createEntry.png" alt="Create entry" width="500px" />
+            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/createEntry.png">
+                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/createEntry.png" alt="Create entry" width="500px" />
             </a>
         </td>
         <td align="center">
-            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/entryDetails.png">
-                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/screenshots/entryDetails.png" alt="Entry Details" width="500px" />
+            <a href="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/entryDetails.png">
+                <img src="https://raw.githubusercontent.com/dorianim/modern-mrbs-theme/main/.github/media/entryDetails.png" alt="Entry Details" width="500px" />
             </a>
         </td>
     </tr>
