@@ -10,7 +10,7 @@ use MRBS\Form\ElementInputSubmit;
 
 function print_head($simple)
 {
-  global $refresh_rate, $mrbs_company_logo, $mrbs_company;
+  global $refresh_rate, $mrbs_company_logo, $mrbs_company, $enable_pwa;
 ?>
 
   <head>
@@ -25,22 +25,24 @@ function print_head($simple)
     <link rel="manifest" href="/mrbs-modern-pwa-manifest.webmanifest">
 
     <?php
-    // TODO: refactor this
-    $pwa_source = MRBS_ROOT . "/Themes/modern/pwa";
-    foreach (scandir($pwa_source) as $file) {
-      $targetFile = MRBS_ROOT . "/$file";
-      if ($file != "." && $file != ".." && $file != "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
-        copy("$pwa_source/$file", $targetFile);
-      }
-      else if ($file == "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
-        $fp = fopen("$pwa_source/$file", "r");
-        $content = fread($fp, filesize("$pwa_source/$file"));
-        fclose($fp);
-        $content = str_replace("@@description@@", "$mrbs_company " . get_vocab("mrbs"), $content);
-        $content = str_replace("@@icon.src@@", $mrbs_company_logo, $content);
-        $content = str_replace("@@name@@", "$mrbs_company " . get_vocab("mrbs"), $content);
-        $content = str_replace("@@short_name@@", get_vocab("mrbs"), $content);
-        file_put_contents($targetFile, $content);
+
+    if(isset($enable_pwa) && $enable_pwa == True) {
+      $pwa_source = MRBS_ROOT . "/Themes/modern/pwa";
+      foreach (scandir($pwa_source) as $file) {
+        $targetFile = MRBS_ROOT . "/$file";
+        if ($file != "." && $file != ".." && $file != "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
+          copy("$pwa_source/$file", $targetFile);
+        }
+        else if ($file == "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
+          $fp = fopen("$pwa_source/$file", "r");
+          $content = fread($fp, filesize("$pwa_source/$file"));
+          fclose($fp);
+          $content = str_replace("@@description@@", "$mrbs_company " . get_vocab("mrbs"), $content);
+          $content = str_replace("@@icon.src@@", $mrbs_company_logo, $content);
+          $content = str_replace("@@name@@", "$mrbs_company " . get_vocab("mrbs"), $content);
+          $content = str_replace("@@short_name@@", get_vocab("mrbs"), $content);
+          file_put_contents($targetFile, $content);
+        }
       }
     }
     ?>
