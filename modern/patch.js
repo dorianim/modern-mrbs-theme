@@ -134,8 +134,6 @@ function patchFormElement(formElement, depth = 0) {
 
     if (formElement.id === "create_by")
         formElement.parentElement.className = "none"
-    else if (formElement.id === "name")
-        formElement.setAttribute("value", mrbs_user.displayName)
 
     if (depth > 0) {
         if (formElement.type === "checkbox")
@@ -298,7 +296,10 @@ function patchEditEntry() {
 
     var form = document.getElementById("main")
     form.parentElement.className = "container"
-    form.className = ""
+
+    var nameField = document.getElementById("name")
+    if (nameField.getAttribute("value") == "")
+        nameField.setAttribute("value", mrbs_user.displayName)
 
     // remove back button
     document.getElementsByName("back_button")[0].outerHTML = ""
