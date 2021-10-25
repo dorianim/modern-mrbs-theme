@@ -336,16 +336,19 @@ function patchViewEntry() {
 
     // add icons to buttons
     var count = 0;
-    patchElements(document.getElementsByTagName("form"), form => {
+    var viewEntryNav = document.getElementById("view_entry_nav")
+    patchElements(viewEntryNav.getElementsByTagName("form"), form => {
         var innerIcon = ""
         var className = ""
+        count++;
+        console.log(form, count)
         var patchParents = false
-        if (form.getAttribute("action").startsWith("edit_entry.php") && count <= 2) {
+        if (form.getAttribute("action").startsWith("edit_entry.php") && count < 3) {
             className = "btn btn-outline-secondary mr-2 mb-2"
             innerIcon = "edit"
             patchParents = true
         }
-        else if (form.getAttribute("action").startsWith("edit_entry.php") && count >= 2) {
+        else if (form.getAttribute("action").startsWith("edit_entry.php") && count >= 3) {
             className = "btn btn-outline-secondary mr-2 mb-2"
             innerIcon = "copy"
             patchParents = true
@@ -371,8 +374,6 @@ function patchViewEntry() {
             form.parentElement.className = "col-sm-6"
             form.parentElement.parentElement.className = "row"
         }
-
-        count++;
 
         patchChildsByTagName(form, "input", formInput => {
             if (formInput.type === "submit") {
