@@ -398,7 +398,7 @@ function patchViewEntry() {
     // delete export buttons
     patchElements(document.getElementsByName("action"), element => {
         if (element.value === "export") {
-            element.parentElement.parentElement.parentElement.outerHTML = ""
+            element.parentElement.parentElement.outerHTML = ""
         }
     })
 }
