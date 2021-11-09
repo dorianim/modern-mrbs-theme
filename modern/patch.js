@@ -574,7 +574,10 @@ function patchEditUsers() {
     var editUsersForm = document.getElementById("form_edit_users")
     if(editUsersForm) {
         // remove back button
-        document.getElementsByName("back_button")[0].outerHTML = ""
+        backButtons = 
+        patchElements(document.getElementsByName("back_button"), backButton => {
+            backButton.outerHTML = ""
+        })
 
         console.log("Found edit user form!")
         editUsersForm.className = ""
@@ -582,7 +585,15 @@ function patchEditUsers() {
         patchForm(editUsersForm, true)
 
         var update_button = document.getElementById("update_button")
-        editUsersForm.innerHTML += "<input type=\"hidden\" name=\"update_button\" value=\"" + update_button.value + "\">"
+        update_button.outerHTML = inputToButton(update_button, update_button.value, "name=\"" + update_button.name + "\" value=\"" + update_button.value + "\"")
+        
+        patchElements(document.getElementsByName("delete_button"), deleteButton => {
+            deleteButton.outerHTML = inputToButton(
+                deleteButton, 
+                deleteButton.value, 
+                "name=\"" + deleteButton.name + "\" value=\"" + deleteButton.value + "\""
+                )
+        })
 
         patchElements(document.getElementsByClassName("error"), errorMessage => {
             errorMessage.className = "alert alert-danger"
@@ -598,6 +609,18 @@ function patchEditUsers() {
         var table = document.getElementById("users_table")
         if (table)
             table.className = "table table-bordered table-hover table-striped"
+    }
+
+    var userListTable = document.getElementById("users_table")
+    if (userListTable) {
+        patchElements(userListTable.getElementsByTagName("form"), form => {
+            patchElements(form.getElementsByTagName("input"), input => {
+                console.log(input)
+                if (input.type == "submit") {
+                    form.innerHTML += "<input type=\"hidden\" name=\"edit_button\" value=\"" + input.value + "\">"
+                }
+            })
+        })
     }
 }
 
@@ -653,11 +676,11 @@ function patchSiteStructure() {
             if (button.type === "submit") {
                 form.addEventListener("submit", () => {
                     button.outerHTML = `
-              <button type="submit" class="` + button.className + `" disabled>
-              ` + button.value + `
-              <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-              </button>
-              `
+                    <button type="submit" class="` + button.className + `" disabled>
+                    ` + button.value + `
+                    <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                    </button>
+                    `
                 })
             }
         }
@@ -665,10 +688,11 @@ function patchSiteStructure() {
         var formButtons = form.getElementsByTagName("button");
         for (const button of formButtons) {
             if (button.type === "submit") {
-                form.addEventListener("submit", () => {
-                    console.log(button)
+                form.addEventListener("submit", e => {
                     button.innerHTML += ' <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>'
-                    button.disabled = true
+                    
+                    if (!button.value)
+                        button.disabled = true
                 })
             }
         }
