@@ -21,7 +21,7 @@ A modern theme for [MRBS](https://mrbs.sourceforge.io/) based on Bootstrap 5.0.
 
 # Usage
 - **Recommended:** Use my [mrbs docker container](https://github.com/dorianim/mrbs-docker). This makes sure that you always have a compatible version of mrbs and removes the need of manual installation and upgrades
-- Alternative: Place the folder `modern` from this repo into the Themes folder of your mrbs. (eg. `/var/www/mrbs/Themes`) and add `$theme = "modern";` to your `config.inc.php`.
+- Alternative: Place the folder `modern` from this repo into the Themes folder of your mrbs. (eg. `/var/www/mrbs/Themes`) and add `$theme = "modern";` to your `config.inc.php`. Please make sure, you are using a [compatible version](#Compatibility)
 
 # Config
 This theme adds some config options which you can use in your config.inc.php:
@@ -43,6 +43,13 @@ This theme adds some config options which you can use in your config.inc.php:
   ```php
   $user_can_edit_profile = True;
   ```
+
+# Compatibility
+
+There is only one supported MRBS version for the latest version of the theme. Older versions won't receive any bugfixes.
+
+- `v0.3.x` (latest): **MRBS 1.10.0**
+- `v0.2.x`: MRBS 1.9.4
 
 # PLEASE NOTE
 * This theme is a quick and dirty workaround. As MRBS does not have a real theme engine, it simply injects JavaScript which then modifies the page after it is loaded.
