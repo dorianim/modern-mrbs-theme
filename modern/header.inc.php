@@ -167,11 +167,40 @@ function print_menu_items($context)
   <!--//print_report_link(session()->getCurrentUser()); -->
   <?php
   print_outstanding($query);
+  print_edit_profile($context);
   if (!$context['omit_login']) {
     print_logonoff_button();
   }
   ?>
 <?php
+}
+
+function print_edit_profile($context) {
+  global $user_can_edit_profile;
+  $user = session()->getCurrentUser();
+  if($user_can_edit_profile && isset($user)) {
+    $form = new Form();
+
+    $form_id = 'header_user_profile';
+
+    $form->setAttributes(array(
+      'id'     => $form_id,
+      'method' => 'post',
+      'action' => multisite('edit_users.php')
+    ));
+
+    $element = new ElementInputSubmit();
+    $element->setAttribute('value', htmlspecialchars($user->display_name));
+    $form->addElement($element);
+    $hidden_inputs = array(
+      'phase'        => '2',
+      'id'          => $user->id,
+      'edit_button' => $user->username
+    );
+    $form->addHiddenInputs($hidden_inputs);
+
+    $form->render();
+  }
 }
 
 function print_goto_date($context)

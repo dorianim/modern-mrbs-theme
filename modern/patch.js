@@ -155,7 +155,7 @@ function inputToButton(inputElement, innerHTML, extraAttributes = "") {
 }
 
 function patchHeader() {
-    for (formId of ["header_goto_date", "header_search", "header_logonoff"]) {
+    for (formId of ["header_goto_date", "header_search", "header_logonoff", "header_user_profile"]) {
         var form = document.getElementById(formId)
         if (!form)
             continue

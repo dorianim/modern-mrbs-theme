@@ -35,9 +35,13 @@ This theme adds some config options which you can use in your config.inc.php:
     'M' => "#73C78A",
     'K' => "#BEBFC2");
   ```
-- `enable_pwa` (bool): Is set to True, the PWA is enabled. False by defualt. Eg:
+- `enable_pwa` (bool): If set to True, the PWA is enabled. False by defualt. Eg:
   ```php
   $enable_pwa = True;
+  ```
+- `user_can_edit_profile` (bool): If set to True, the user can edit their profile using a button in the navbar. Eg:
+  ```php
+  $user_can_edit_profile = True;
   ```
 
 # PLEASE NOTE
