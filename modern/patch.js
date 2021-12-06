@@ -335,6 +335,7 @@ function patchViewEntry() {
     })
 
     // add icons to buttons
+    console.log("Adding icons to nav buttons")
     var count = 0;
     var viewEntryNav = document.getElementById("view_entry_nav")
     patchElements(viewEntryNav.getElementsByTagName("form"), form => {
@@ -385,15 +386,41 @@ function patchViewEntry() {
 
     // make "You are registered for this event" and "This event is full" a nice banner
     var registrationContainer = document.getElementById("registration");
-    if(registrationContainer)
-    patchElements(registrationContainer.childNodes, child => {
-        if (child.nodeName === "P") {
-            child.outerHTML = `
-            <div class="alert alert-primary" role="alert">
-                ` + child.innerHTML + `
-            </div>`
-        }
-    })
+    if(registrationContainer) {
+        patchElements(registrationContainer.childNodes, child => {
+            if (child.nodeName === "P") {
+                child.outerHTML = `
+                <div class="alert alert-primary" role="alert">
+                    ` + child.innerHTML + `
+                </div>`
+            }
+        })
+        console.log("Adding icons to add and remove buttons")
+        patchElements(registrationContainer.getElementsByTagName("form"), form => {
+            var innerIcon = ""
+            var className = ""
+            console.log(form, count)
+        
+            if (form.getAttribute("action") === "registration_handler.php" && form.parentElement.id === "registration") {
+                className = "btn btn-outline-success mr-2 mb-2"
+                innerIcon = "plus-circle"
+            }
+            else if (form.getAttribute("action") === "registration_handler.php" && form.parentElement.id !== "registration") {
+                className = "btn btn-outline-danger mr-2 mb-2"
+                innerIcon = "trash"
+            }
+            else {
+                return
+            }
+    
+            patchChildsByTagName(form, "input", formInput => {
+                if (formInput.type === "submit") {
+                    formInput.className = className
+                    formInput.outerHTML = inputToButton(formInput, "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + formInput.value)
+                }
+            })
+        })
+    }
 
     // delete export buttons
     patchElements(document.getElementsByName("action"), element => {
