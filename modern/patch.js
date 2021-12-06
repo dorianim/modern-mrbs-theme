@@ -664,6 +664,38 @@ function patchResetPassword() {
         patchForm(form, true)
 }
 
+function patchDel() {
+    if(window.location.pathname !== "/del.php")
+        return
+
+    console.log("Adding icons to add and remove buttons")
+    container = document.getElementById("del_room_confirm")
+    patchElements(container.getElementsByTagName("form"), form => {
+        var innerIcon = ""
+        var className = ""
+        console.log(form)
+    
+        if (form.getAttribute("action") === "admin.php") {
+            className = "btn btn-outline-success mr-2 mb-2"
+            innerIcon = "x-circle"
+        }
+        else if (form.getAttribute("action") === "del.php") {
+            className = "btn btn-outline-danger mr-2 mb-2"
+            innerIcon = "trash"
+        }
+        else {
+            return
+        }
+
+        patchChildsByTagName(form, "input", formInput => {
+            if (formInput.type === "submit") {
+                formInput.className = className
+                formInput.outerHTML = inputToButton(formInput, "<span class=\"mr-2\" data-feather=\"" + innerIcon + "\"></span>" + formInput.value)
+            }
+        })
+    })
+}
+
 function patchSiteStructure() {
 
     // general patch of standard elements
@@ -698,6 +730,7 @@ function patchSiteStructure() {
     patchHeader()
     patchEditUsers()
     patchResetPassword()
+    patchDel()
 
     var forms = document.getElementsByTagName('form')
 
