@@ -384,6 +384,10 @@ function patchViewEntry() {
         })
     })
 
+    if(auth.only_admins_can_book && !mrbs_user.isAdmin) {
+        viewEntryNav.outerHTML = ""
+    }
+
     // make "You are registered for this event" and "This event is full" a nice banner
     var registrationContainer = document.getElementById("registration");
     if(registrationContainer) {

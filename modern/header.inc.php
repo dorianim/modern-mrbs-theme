@@ -10,7 +10,7 @@ use MRBS\Form\ElementInputSubmit;
 
 function print_head($simple)
 {
-  global $refresh_rate, $mrbs_company_logo, $mrbs_company, $enable_pwa;
+  global $refresh_rate, $mrbs_company_logo, $mrbs_company, $enable_pwa, $auth;
 ?>
 
   <head>
@@ -67,12 +67,15 @@ function print_head($simple)
       var mrbs_user = {};
       <?php if (session()->getCurrentUser() !== null) : ?>
         mrbs_user.displayName = "<?= session()->getCurrentUser()->display_name ?>";
-        mrbs_user.isAdmin = " <?= is_admin() ? "true" : "false" ?>";
+        mrbs_user.isAdmin = <?= is_admin() ? "true" : "false" ?>;
       <?php endif; ?>
       var mrbs_company_logo = "<?= $mrbs_company_logo ?>";
       var mrbs_company = "<?= $mrbs_company ?>";
+      var auth = {};
+      auth["only_admins_can_book"] = <?= $auth['only_admin_can_book'] ? "true":"false" ?>;
       var vocab = {};
       vocab["mrbs"] = "<?= get_vocab("mrbs") ?>";
+
       
     </script>
 
