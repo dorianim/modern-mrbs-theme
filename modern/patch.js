@@ -485,7 +485,7 @@ function patchAdministration() {
 
             patchChildsByTagName(row.cells[6], "button", input => {
                 input.src = ""
-                input.type = "button"
+                input.type = "submit"
                 input.className = "btn btn-outline-danger"
                 input.innerHTML = "<span class=\"mr-2\" data-feather=\"trash\"></span>" + input.title
             })
