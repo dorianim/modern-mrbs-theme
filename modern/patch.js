@@ -644,14 +644,19 @@ function patchEditUsers() {
 
     var userListTable = document.getElementById("users_table")
     if (userListTable) {
-        patchElements(userListTable.getElementsByTagName("form"), form => {
-            patchElements(form.getElementsByTagName("input"), input => {
-                console.log(input)
-                if (input.type == "submit") {
-                    form.innerHTML += "<input type=\"hidden\" name=\"edit_button\" value=\"" + input.value + "\">"
-                }
+        if(!mrbs_user.isAdmin) {
+            window.location.replace("/")
+        }
+        else {
+            patchElements(userListTable.getElementsByTagName("form"), form => {
+                patchElements(form.getElementsByTagName("input"), input => {
+                    console.log(input)
+                    if (input.type == "submit") {
+                        form.innerHTML += "<input type=\"hidden\" name=\"edit_button\" value=\"" + input.value + "\">"
+                    }
+                })
             })
-        })
+        }
     }
 }
 
