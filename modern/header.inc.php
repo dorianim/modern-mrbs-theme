@@ -155,7 +155,7 @@ function print_menu_items($context)
   <ul class="navbar-nav ml-auto" style="margin-left: auto !important;">
 
     <?php foreach ($menu_items as $token => $page) :
-      if (!is_admin() && in_array($token, $disable_menu_items_for_non_admins))
+      if (!is_admin() && !empty($disable_menu_items_for_non_admins) && in_array($token, $disable_menu_items_for_non_admins))
         continue;
 
       if (checkAuthorised($page, true)) : ?>
