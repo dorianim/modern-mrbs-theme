@@ -745,6 +745,10 @@ function patchDel() {
 }
 
 function patchSiteStructure() {
+    if(window.location.search.indexOf("nopatch=true") >= 0) {
+        console.log("NOT PATCHING!")
+        return;
+    }
 
     // general patch of standard elements
     var buttons = document.getElementsByTagName('input'),
