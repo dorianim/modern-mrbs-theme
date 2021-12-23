@@ -547,7 +547,7 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
 
   // This <div> should really be moved out of here so that we can always see
   // the matching closing </div>
-  echo "<div class=\"container\">\n";
+  echo "<div class=\"container\" id=\"container\">\n";
 } // end of print_theme_header()
 
 

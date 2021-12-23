@@ -533,6 +533,18 @@ function patchImport() {
     if (window.location.pathname !== "/import.php")
         return
 
+    container = document.getElementById("container")
+    if(container) {
+        firstChild = container.childNodes[1]
+        if(firstChild && firstChild.tagName == "P") {
+            firstChild.outerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>` + firstChild.innerHTML + `</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`
+        }
+    }
+
     patchElements(document.getElementsByTagName("form"), form => {
         if (form.getAttribute("action") == "import.php") {
             patchChildsByTagName(form, "fieldset", fieldset => {
@@ -542,6 +554,37 @@ function patchImport() {
             patchForm(form)
         }
     })
+
+    radioButtons = document.getElementsByName("source_type")
+    if(radioButtons) {
+        patchElements(radioButtons, buton => {
+            buton.onchange = function() {
+                if(this.checked) {
+                    let fieldToHide = ""
+                    let fieldToShow = this.value
+                    if(fieldToShow == "file") {
+                        fieldToHide = "url"
+                    }
+                    else {
+                        fieldToHide = "file"
+                    }
+                    fieldToHide = document.getElementById("field_" + fieldToHide)
+                    fieldToShow = document.getElementById("field_" + fieldToShow)
+
+                    fieldToHide.classList.add("d-none")
+                    patchElements(fieldToHide.childNodes, cn => cn.disabled = true)
+                    fieldToShow.classList.remove("d-none")
+                    patchElements(fieldToShow.childNodes, cn => cn.disabled = false)
+                }
+            }
+            buton.onchange()
+        })
+    }
+
+    submitButton = document.getElementById("import")
+    if(submitButton) {
+        submitButton.outerHTML = inputToButton(submitButton, submitButton.value, "name=\"" + submitButton.name + "\" value=\"" + submitButton.value + "\"")
+    }
 }
 
 function patchReport() {
