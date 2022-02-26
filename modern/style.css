@@ -165,3 +165,15 @@ div#area_form, div#room_form {
 .view_entry #registration .standard fieldset > div > label {
   display: none;
 }
+
+.nav-item > a {
+  color: rgba(255,255,255,.55);
+  padding-right: .5rem;
+  padding-left: .5rem;
+  background: 0 0;
+  border: 0;
+  border-radius: .25rem;
+  display: block;
+  text-decoration: none;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}

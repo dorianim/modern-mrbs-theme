@@ -20,6 +20,7 @@ function print_head($simple)
     <!-- Improve scaling on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="csrf_token" content="<?=htmlspecialchars(Form::getToken())?>">
 
     <!-- stuff for PWA -->
     <link rel="manifest" href="/mrbs-modern-pwa-manifest.webmanifest">
@@ -136,7 +137,9 @@ function print_header_site_info()
 
 function print_menu_items($context)
 {
-  global $disable_menu_items_for_non_admins, $auth;
+  global $disable_menu_items_for_non_admins, 
+    $mrbs_company_more_info, 
+    $auth;
 
   $query = build_query($context);
 
@@ -160,10 +163,16 @@ function print_menu_items($context)
 
       if (checkAuthorised($page, true)) : ?>
         <li class="nav-item active">
-          <a href="<?= htmlspecialchars(multisite("$page?$query")) ?>" class="nav-link" aria-current="page"><?= get_vocab($token) ?></a>
+          <a href="<?= htmlspecialchars(multisite("$page?$query")) ?>" class="-link" aria-current="page"><?= get_vocab($token) ?></a>
         </li>
     <?php endif;
     endforeach; ?>
+
+    <?php if(isset($mrbs_company_more_info)): ?>
+      <li class="nav-item active">
+        <?= $mrbs_company_more_info ?>
+      </li>
+    <?php endif; ?>
   </ul>
 
   <?= print_goto_date($context) ?>
