@@ -177,3 +177,7 @@ div#area_form, div#room_form {
   text-decoration: none;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 }
+
+.qr-svg {
+  transform: none;
+}

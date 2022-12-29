@@ -33,6 +33,9 @@ $main_table_header_border_color = "#dddddd";    // border colour for day/week/mo
 $main_table_body_h_border_color = "#ffffff";    // border colour for day/week/month tables - body, horizontal
 $main_table_body_v_border_color = "#e4e4e4";    // border colour for day/week/month tables - body, vertical
 $main_table_month_color         = "#ffffff";    // background colour for days in the month view
+$main_table_month_weekend_color = "#f4f4f4";    // background colour for weekends in the month view
+$main_table_month_holiday_color = "#e8e8e8";    // background colour for holidays in the month view
+$main_table_month_weekend_holiday_color = "#dfdfdf";    // background colour for weekend holidays in the month view
 $main_table_month_invalid_color = "#d1d9de";    // background colour for invalid days in the month view
 $main_table_slot_invalid_color  = "#d1d9de";    // background colour for invalid slots in the day and week views
 $main_table_slot_private_type_color = "#d1d9de";          // background colour when the type has to kept private
@@ -40,7 +43,7 @@ $main_table_labels_back_color   = $header_back_color;     // background colour f
 $timeline_color                 = $header_back_color;
 
 $zebra_even_color = 'white';    // Colour for even rows in the main table
-$zebra_odd_color  = '#E2E4FF';  // Colour for even rows in the main table
+$zebra_odd_color  = '#e2e4ff';  // Colour for odd rows in other tables (eg Search, Report and Users)
 
 // border colours for the main table when it is printed.     These are used by mrbs-print.css.php
 $main_table_border_color_print        = "#879AA8";    // border colour for the main table (print view)
@@ -74,8 +77,14 @@ $anchor_hover_color_header      = $anchor_link_color_header;   // link color (ho
 
 $column_hidden_color            = $main_table_month_invalid_color;    // hidden days in the week and month views
 $calendar_hidden_color          = "#dae0e4";                          // hidden days in the mini-cals
-$row_even_color                 = "#ffffff";        // even rows in the day and week views
-$row_odd_color                  = "#efefef";        // even rows in the day and week views
+$row_even_color                 = "#ffffff"; // even rows in the day and week views
+$row_odd_color                  = "#efefef"; // odd rows in the day and week views
+$row_even_color_weekend         = "#f4f4f4"; // even rows in the day and week views for weekends
+$row_odd_color_weekend          = "#e4e4e4"; // odd rows in the day and week views for weekends
+$row_even_color_holiday         = "#e8e8e8"; // even rows in the day and week views for holidays
+$row_odd_color_holiday          = "#d8d8d8"; // odd rows in the day and week views for holidays
+$row_even_color_weekend_holiday = "#dfdfdf"; // even rows in the day and week views for weekend holidays
+$row_odd_color_weekend_holiday  = "#cfcfcf"; // odd rows in the day and week views for weekend holidays
 $row_highlight_color            = $banner_back_color;  // used for highlighting a row
 
 $help_highlight_color           = "#ffe6f0";        // highlighting text on the help page

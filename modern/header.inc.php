@@ -6,7 +6,8 @@ use MRBS\Form\Form;
 use MRBS\Form\ElementInputDate;
 use MRBS\Form\ElementInputSearch;
 use MRBS\Form\ElementInputSubmit;
-
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 
 function print_head($simple)
 {
@@ -109,6 +110,26 @@ function print_navbar($context)
   <?php
 }
 
+function print_qr_code($context, $query) {
+  global $kiosk_QR_code;
+  // Add in a QR code for kiosk mode
+  // (The QR code library requires PHP 7.4 or greater)
+  if (isset($context['kiosk']) &&
+      $kiosk_QR_code &&
+      (version_compare(PHP_VERSION, 7.4) >= 0))
+  {
+    $url = multisite(url_base() . "/index.php?$query");
+    echo '<div class="d-flex mx-lg-1 mb-2 mb-lg-0" title="' . htmlspecialchars($url) . "\">\n";
+    $options = new QROptions([
+      'outputType'  => QRCode::OUTPUT_MARKUP_SVG,
+      'imageBase64' => false,
+    ]);
+    $qrcode = new QRCode($options);
+    echo $qrcode->render($url);
+    echo "</div>\n";
+  }
+}
+
 function print_header_site_info()
 {
   global $mrbs_company,
@@ -138,9 +159,10 @@ function print_header_site_info()
 function print_menu_items($context)
 {
   global $disable_menu_items_for_non_admins, 
-    $mrbs_company_more_info, 
+    $mrbs_company_more_info, $kiosk_mode_enabled,
     $auth;
 
+  $kiosk_mode_active = isset($context['kiosk']);
   $query = build_query($context);
 
   $menu_items = array(
@@ -153,6 +175,11 @@ function print_menu_items($context)
   {
     $menu_items['user_list'] = 'edit_users.php';
   }
+  
+  if ($kiosk_mode_enabled)
+  {
+    $menu_items['kiosk'] = 'kiosk.php';
+  } 
   ?>
 
   <ul class="navbar-nav ml-auto" style="margin-left: auto !important;">
@@ -163,27 +190,32 @@ function print_menu_items($context)
 
       if (checkAuthorised($page, true)) : ?>
         <li class="nav-item active">
-          <a href="<?= htmlspecialchars(multisite("$page?$query")) ?>" class="-link" aria-current="page"><?= get_vocab($token) ?></a>
+          <a href="<?= htmlspecialchars(multisite("$page?$query")) ?>" class="nav-link" aria-current="page"><?= get_vocab($token) ?></a>
         </li>
     <?php endif;
     endforeach; ?>
 
-    <?php if(isset($mrbs_company_more_info)): ?>
+    <?php if(isset($mrbs_company_more_info) && !$kiosk_mode_active): ?>
       <li class="nav-item active">
         <?= $mrbs_company_more_info ?>
       </li>
     <?php endif; ?>
   </ul>
 
-  <?= print_goto_date($context) ?>
-  <?= print_search($context) ?>
-
-  <!--//print_report_link(session()->getCurrentUser()); -->
-  <?php
-  print_outstanding($query);
-  print_edit_profile($context);
-  if (!$context['omit_login']) {
-    print_logonoff_button();
+  <?php 
+  if(!$kiosk_mode_active) {
+    print_goto_date($context);
+    print_search($context);
+    print_outstanding($query);
+    print_edit_profile($context);
+    
+    if (!$context['omit_login']) {
+      print_logonoff_button();
+    }
+  }
+  else {
+    print_end_kiosk_button();
+    print_qr_code($context, $query);
   }
   ?>
 <?php
@@ -423,6 +455,30 @@ function print_logonoff_button()
   $form->render();
 }
 
+function print_end_kiosk_button()
+{
+  $params = array();
+
+  $form = new Form();
+  $form->setAttributes(array(
+    'id' => 'header_end_kiosk',
+    'method' => "post",
+    'action' => "kiosk.php?kiosk=" . $_GET["kiosk"] . "&area=" . $_GET["area"] . "&room=" . $_GET["room"]
+  ));
+
+  // Add the hidden fields
+  if (isset($params['hidden_inputs'])) {
+    $form->addHiddenInputs($params['hidden_inputs']);
+  }
+
+  // The submit button
+  $element = new ElementInputSubmit();
+  $element->setAttribute('value', "End kiosk");
+  $form->addElement($element);
+
+  $form->render();
+}
+
 // Print a message which will only be displayed (thanks to CSS) if the user is
 // using an unsupported browser.
 function print_unsupported_message($context)
@@ -443,7 +499,7 @@ function print_unsupported_message($context)
 // When $omit_login is true the Login link is omitted.
 function print_theme_header($context = null, $simple = false, $omit_login = false)
 {
-  global $multisite, $site, $default_view, $default_view_all;
+  global $multisite, $site, $default_view, $default_view_all, $style_weekends;
 
   // Set the context values if they haven't been given
   if (!isset($context)) {
@@ -528,6 +584,11 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
     $data['site'] = $site;
   }
 
+  if (isset($context['kiosk']))
+  {
+    $data['kiosk'] = $context['kiosk'];
+  }
+
   // We need $timetohighlight for the day and week views
   $timetohighlight = get_form_var('timetohighlight', 'int');
   if (isset($timetohighlight)) {
@@ -540,6 +601,16 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
   $mrbs_user = session()->getCurrentUser();
   if (isset($mrbs_user)) {
     $classes[] = 'logged_in';
+  }
+
+  // To help styling
+  if ($view_week_number)
+  {
+    $classes[] = 'view_week_number';
+  }
+  if ($style_weekends)
+  {
+    $classes[] = 'style_weekends';
   }
 
   echo '<body class="' . htmlspecialchars(implode(' ', $classes)) . '"';

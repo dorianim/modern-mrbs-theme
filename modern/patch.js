@@ -155,7 +155,7 @@ function inputToButton(inputElement, innerHTML, extraAttributes = "") {
 }
 
 function patchHeader() {
-    for (formId of ["header_goto_date", "header_search", "header_logonoff", "header_user_profile"]) {
+    for (formId of ["header_goto_date", "header_search", "header_logonoff", "header_user_profile", "header_end_kiosk"]) {
         var form = document.getElementById(formId)
         if (!form)
             continue
@@ -216,6 +216,8 @@ function patchMainPage() {
     if (window.location.pathname !== "/index.php" && window.location.pathname !== "/")
         return
 
+    console.log("Patching calendar!")
+
     // patch calendar
     var currentDateElement = document.getElementsByClassName("date")[0]
     if (!currentDateElement)
@@ -267,7 +269,7 @@ function patchMainPage() {
             //element.innerHTML = "<span aria-hidden=\"true\">&laquo;</span>"
         })
 
-        element.outerHTML = "<div class=\"btn-group col-auto mr-2 mb-2 mb-md-0\" role=\"group\">" + element.innerHTML + "</div>"
+        element.outerHTML = "<div class=\"calendar_day_selector btn-group col-auto mr-2 mb-2 mb-md-0\" role=\"group\">" + element.innerHTML + "</div>"
     })
 
     // view select
@@ -283,7 +285,7 @@ function patchMainPage() {
             //element.innerHTML = "<span aria-hidden=\"true\">&laquo;</span>"
         })
 
-        element.outerHTML = "<div class=\"btn-group col-auto col-md-0 mr-2 mb-2 mb-md-0\" role=\"group\">" + element.innerHTML + "</div>"
+        element.outerHTML = "<div class=\"calendar_view_selector btn-group col-auto col-md-0 mr-2 mb-2 mb-md-0\" role=\"group\">" + element.innerHTML + "</div>"
     })
 
     // scroll table
@@ -744,6 +746,35 @@ function patchDel() {
     })
 }
 
+function patchKiosk() {
+    if(window.location.pathname === "/kiosk.php") {
+        var enter_form = document.getElementById("kiosk_enter")
+        if (enter_form) {
+            enter_form.innerHTML += "<input type=\"hidden\" name=\"enter_button\" value=\"Starten\" />"
+            patchForm(enter_form, false)
+        }
+
+        var exit_form = document.getElementById("kiosk_exit")
+        if (exit_form) {
+            exit_form.innerHTML += "<input type=\"hidden\" name=\"exit_button\" value=\"Verlassen\" />"
+            patchForm(exit_form)
+        }
+
+        patchElements(document.getElementsByName("back_button"), element => {
+            element.parentElement.outerHTML = ""
+        })
+    }
+    else if(window.location.pathname === "/index.php" && (new URLSearchParams(window.location.search)).get("kiosk")) {
+        patchElements(document.getElementsByClassName("calendar_day_selector"), element => {
+            element.outerHTML = ""
+        })
+
+        patchElements(document.getElementsByClassName("calendar_view_selector"), element => {
+            element.outerHTML = ""
+        })
+    }
+}
+
 function patchSiteStructure() {
     if(window.location.search.indexOf("nopatch=true") >= 0) {
         console.log("NOT PATCHING!")
@@ -783,6 +814,7 @@ function patchSiteStructure() {
     patchEditUsers()
     patchResetPassword()
     patchDel()
+    patchKiosk()
 
     var forms = document.getElementsByTagName('form')
 
