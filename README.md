@@ -48,7 +48,8 @@ This theme adds some config options which you can use in your config.inc.php:
 
 There is only one supported MRBS version for the latest version of the theme. Older versions won't receive any bugfixes.
 
-- `v0.3.x` (latest): **MRBS 1.10.0**
+- `v0.4.x` (latest): **MRBS 1.11.0**
+- `v0.3.x`: MRBS 1.10.0
 - `v0.2.x`: MRBS 1.9.4
 
 # PLEASE NOTE
