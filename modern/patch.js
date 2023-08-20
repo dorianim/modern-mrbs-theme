@@ -147,6 +147,10 @@ function inputToButton(inputElement, innerHTML, extraAttributes = "") {
     if (inputElement.onclick) {
         extraAttributes = `onclick="` + inputElement.onclick.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1] + `" ` + extraAttributes
     }
+    if (inputElement.disabled) {
+      extraAttributes = 'disabled="disabled" ' + extraAttributes
+    }
+
     return `
     <button type="` + inputElement.type + `" class="` + inputElement.className + `" ` + extraAttributes + ` >
     ` + innerHTML + `
