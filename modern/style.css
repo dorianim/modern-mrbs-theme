@@ -184,5 +184,5 @@ div#area_form, div#room_form {
 
 button.btn:disabled {
   pointer-events: auto !important;  /* in order to display tooltips */
-  cursor: default;
+  cursor: not-allowed;
 }
