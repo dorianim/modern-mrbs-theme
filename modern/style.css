@@ -181,3 +181,8 @@ div#area_form, div#room_form {
 .qr-svg {
   transform: none;
 }
+
+button.btn:disabled {
+  pointer-events: auto !important;  /* in order to display tooltips */
+  cursor: not-allowed;
+}
