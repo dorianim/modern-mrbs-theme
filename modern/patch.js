@@ -152,7 +152,7 @@ function inputToButton(inputElement, innerHTML, extraAttributes = "") {
     }
 
     return `
-    <button type="` + inputElement.type + `" class="` + inputElement.className + `" ` + extraAttributes + ` >
+    <button type="` + inputElement.type + `" class="` + inputElement.className + `" title="` + inputElement.title + `" ` + extraAttributes + ` >
     ` + innerHTML + `
     </button>
     `
