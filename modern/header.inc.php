@@ -12,7 +12,7 @@ use chillerlan\QRCode\QROptions;
 function print_head($simple)
 {
   global $refresh_rate, $mrbs_company_logo, $mrbs_company, $enable_pwa, $auth;
-?>
+  ?>
 
   <head>
 
@@ -21,31 +21,29 @@ function print_head($simple)
     <!-- Improve scaling on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta name="csrf_token" content="<?=htmlspecialchars(Form::getToken())?>">
+    <meta name="csrf_token" content="<?= htmlspecialchars(Form::getToken()) ?>">
 
     <!-- stuff for PWA -->
     <link rel="manifest" href="/mrbs-modern-pwa-manifest.webmanifest">
 
     <?php
 
-    if(isset($enable_pwa) && $enable_pwa == True) {
+    if (isset($enable_pwa) && $enable_pwa == True) {
       $pwa_source = MRBS_ROOT . "/Themes/modern/pwa";
       foreach (scandir($pwa_source) as $file) {
         $targetFile = MRBS_ROOT . "/$file";
         if ($file != "." && $file != ".." && $file != "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
           copy("$pwa_source/$file", $targetFile);
-        }
-        else if ($file == "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
+        } else if ($file == "mrbs-modern-pwa-manifest.webmanifest" && !file_exists($targetFile)) {
           $fp = fopen("$pwa_source/$file", "r");
           $content = fread($fp, filesize("$pwa_source/$file"));
           fclose($fp);
           $content = str_replace("@@description@@", "$mrbs_company " . get_vocab("mrbs"), $content);
           $content = str_replace("@@icon.src@@", $mrbs_company_logo, $content);
           $content = str_replace("@@name@@", "$mrbs_company " . get_vocab("mrbs"), $content);
-          if(get_vocab("mrbs") != "") {
+          if (get_vocab("mrbs") != "") {
             $content = str_replace("@@short_name@@", get_vocab("mrbs"), $content);
-          }
-          else {
+          } else {
             $content = str_replace("@@short_name@@", $mrbs_company, $content);
           }
           file_put_contents($targetFile, $content);
@@ -54,7 +52,7 @@ function print_head($simple)
     }
     ?>
 
-    <?php if (($refresh_rate != 0) && (this_page(false, '.php') == 'index')) : ?>
+    <?php if (($refresh_rate != 0) && (this_page(false, '.php') == 'index')): ?>
       <!-- If we're using JavaScript we'll do the refresh by getting a new
       -- table using Ajax requests, which means we only have to download
       -- the table not the whole page each time -->
@@ -68,26 +66,28 @@ function print_head($simple)
     <link href="Themes/modern/static/bootstrap.min.css" rel="stylesheet">
     <link href="Themes/modern/style.css" rel="stylesheet">
 
-    <title><?= get_vocab("mrbs") ?></title>
+    <title>
+      <?= get_vocab("mrbs") ?>
+    </title>
 
     <script>
       var mrbs_user = {};
-      <?php if (session()->getCurrentUser() !== null) : ?>
+      <?php if (session()->getCurrentUser() !== null): ?>
         mrbs_user.displayName = "<?= session()->getCurrentUser()->display_name ?>";
         mrbs_user.isAdmin = <?= is_admin() ? "true" : "false" ?>;
       <?php endif; ?>
       var mrbs_company_logo = "<?= $mrbs_company_logo ?>";
       var mrbs_company = "<?= $mrbs_company ?>";
       var auth = {};
-      auth["only_admins_can_book"] = <?= $auth['only_admin_can_book'] ? "true":"false" ?>;
+      auth["only_admins_can_book"] = <?= $auth['only_admin_can_book'] ? "true" : "false" ?>;
       var vocab = {};
       vocab["mrbs"] = "<?= get_vocab("mrbs") ?>";
 
-      
+
     </script>
 
   </head>
-<?php
+  <?php
 }
 
 // $context is an associative array indexed by 'view', 'view_all', 'year', 'month', 'day', 'area' and 'room',
@@ -95,11 +95,12 @@ function print_head($simple)
 // When $omit_login is true the Login link is omitted.
 function print_navbar($context)
 {
-?>
+  ?>
   <nav id="header_navbar" class="navbar navbar-expand-lg navbar-dark nav-pills bg-dark shadow fixed-top">
     <div class="container-fluid">
       <?= print_header_site_info() ?>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -110,18 +111,20 @@ function print_navbar($context)
   <?php
 }
 
-function print_qr_code($context, $query) {
+function print_qr_code($context, $query)
+{
   global $kiosk_QR_code;
   // Add in a QR code for kiosk mode
   // (The QR code library requires PHP 7.4 or greater)
-  if (isset($context['kiosk']) &&
-      $kiosk_QR_code &&
-      (version_compare(PHP_VERSION, 7.4) >= 0))
-  {
+  if (
+    isset($context['kiosk']) &&
+    $kiosk_QR_code &&
+    (version_compare(PHP_VERSION, 7.4) >= 0)
+  ) {
     $url = multisite(url_base() . "/index.php?$query");
     echo '<div class="d-flex mx-lg-1 mb-2 mb-lg-0" title="' . htmlspecialchars($url) . "\">\n";
     $options = new QROptions([
-      'outputType'  => QRCode::OUTPUT_MARKUP_SVG,
+      'outputType' => QRCode::OUTPUT_MARKUP_SVG,
       'imageBase64' => false,
     ]);
     $qrcode = new QRCode($options);
@@ -133,34 +136,34 @@ function print_qr_code($context, $query) {
 function print_header_site_info()
 {
   global $mrbs_company,
-    $mrbs_company_url,
-    $mrbs_company_logo;
+  $mrbs_company_url,
+  $mrbs_company_logo;
 
   if (!isset($mrbs_company_url)) {
     $mrbs_company_url = multisite('index.php');
   }
 
-  if (isset($mrbs_company_logo)) : ?>
+  if (isset($mrbs_company_logo)): ?>
     <a href="<?= $mrbs_company_url ?>">
       <img class="d-inline-block align-top mr-2" src="<?= $mrbs_company_logo ?>" alt="" width="40px">
     </a>
   <?php endif; ?>
 
   <a class="navbar-brand column" href="<?= $mrbs_company_url ?>">
-    <?php if (isset($mrbs_company)) : ?>
+    <?php if (isset($mrbs_company)): ?>
       <?= htmlspecialchars($mrbs_company) ?><br>
     <?php endif; ?>
 
     <?= get_vocab('mrbs') ?>
   </a>
-<?php
+  <?php
 }
 
 function print_menu_items($context)
 {
-  global $disable_menu_items_for_non_admins, 
-    $mrbs_company_more_info, $kiosk_mode_enabled,
-    $auth;
+  global $disable_menu_items_for_non_admins,
+  $mrbs_company_more_info, $kiosk_mode_enabled,
+  $auth;
 
   $kiosk_mode_active = isset($context['kiosk']);
   $query = build_query($context);
@@ -168,79 +171,79 @@ function print_menu_items($context)
   $menu_items = array(
     'report' => 'report.php',
     'import' => 'import.php',
-    'rooms'  => 'admin.php'
-  ); 
-  
-  if ($auth['type'] == 'db')
-  {
+    'rooms' => 'admin.php'
+  );
+
+  if ($auth['type'] == 'db') {
     $menu_items['user_list'] = 'edit_users.php';
   }
-  
-  if ($kiosk_mode_enabled)
-  {
+
+  if ($kiosk_mode_enabled) {
     $menu_items['kiosk'] = 'kiosk.php';
-  } 
+  }
   ?>
 
   <ul class="navbar-nav ml-auto" style="margin-left: auto !important;">
 
-    <?php foreach ($menu_items as $token => $page) :
+    <?php foreach ($menu_items as $token => $page):
       if (!is_admin() && !empty($disable_menu_items_for_non_admins) && in_array($token, $disable_menu_items_for_non_admins))
         continue;
 
-      if (checkAuthorised($page, true)) : ?>
+      if (checkAuthorised($page, true)): ?>
         <li class="nav-item active">
           <a href="<?= htmlspecialchars(multisite("$page?$query")) ?>" class="nav-link" aria-current="page"><?= get_vocab($token) ?></a>
         </li>
-    <?php endif;
+      <?php endif;
     endforeach; ?>
 
-    <?php if(isset($mrbs_company_more_info) && !$kiosk_mode_active): ?>
+    <?php if (isset($mrbs_company_more_info) && !$kiosk_mode_active): ?>
       <li class="nav-item active">
         <?= $mrbs_company_more_info ?>
       </li>
     <?php endif; ?>
   </ul>
 
-  <?php 
-  if(!$kiosk_mode_active) {
+  <?php
+  if (!$kiosk_mode_active) {
     print_goto_date($context);
     print_search($context);
     print_outstanding($query);
     print_edit_profile($context);
-    
+
     if (!$context['omit_login']) {
       print_logonoff_button();
     }
-  }
-  else {
+  } else {
     print_end_kiosk_button();
     print_qr_code($context, $query);
   }
-  ?>
+?>
 <?php
 }
 
-function print_edit_profile($context) {
+function print_edit_profile($context)
+{
   global $user_can_edit_profile;
   $user = session()->getCurrentUser();
-  if($user_can_edit_profile && isset($user)) {
+  if ($user_can_edit_profile && isset($user)) {
     $form = new Form();
 
     $form_id = 'header_user_profile';
 
-    $form->setAttributes(array(
-      'id'     => $form_id,
-      'method' => 'post',
-      'action' => multisite('edit_users.php')
-    ));
+    $form->setAttributes(
+      array(
+        'id' => $form_id,
+        'method' => 'post',
+        'action' => multisite('edit_users.php')
+      )
+    );
 
     $element = new ElementInputSubmit();
     $element->setAttribute('value', htmlspecialchars($user->display_name));
     $form->addElement($element);
     $hidden_inputs = array(
-      'phase'        => '2',
-      'id'          => $user->id,
+      'phase' => '2',
+      'id' => $user->id,
       'edit_button' => $user->username
     );
     $form->addHiddenInputs($hidden_inputs);
@@ -262,11 +265,13 @@ function print_goto_date($context)
 
   $form_id = 'header_goto_date';
 
-  $form->setAttributes(array(
-    'id'     => $form_id,
-    'method' => 'get',
-    'action' => multisite('index.php')
-  ))
+  $form->setAttributes(
+    array(
+      'id' => $form_id,
+      'method' => 'get',
+      'action' => multisite('index.php')
+    )
+  )
     ->addHiddenInput('view', $context['view']);
 
   if (isset($context['area'])) {
@@ -282,13 +287,15 @@ function print_goto_date($context)
   }
 
   $input = new ElementInputDate();
-  $input->setAttributes(array(
-    'name'        => 'page_date',
-    'value'       => format_iso_date($context['year'], $context['month'], $context['day']),
-    'required'    => true,
-    'data-submit' => $form_id,
-    'onchange'    => 'this.form.submit()'
-  ));
+  $input->setAttributes(
+    array(
+      'name' => 'page_date',
+      'value' => format_iso_date($context['year'], $context['month'], $context['day']),
+      'required' => true,
+      'data-submit' => $form_id,
+      'onchange' => 'this.form.submit()'
+    )
+  );
 
   $form->addElement($input);
 
@@ -304,18 +311,22 @@ function print_search($context)
 
   $form = new Form();
 
-  $form->setAttributes(array(
-    'id'     => 'header_search',
-    'method' => 'post',
-    'action' => multisite('search.php')
-  ))
-    ->addHiddenInputs(array(
-      'view'  => $context['view'],
-      'year'  => $context['year'],
-      'month' => $context['month'],
-      'day'   => $context['day']
-    ));
-    
+  $form->setAttributes(
+    array(
+      'id' => 'header_search',
+      'method' => 'post',
+      'action' => multisite('search.php')
+    )
+  )
+    ->addHiddenInputs(
+      array(
+        'view' => $context['view'],
+        'year' => $context['year'],
+        'month' => $context['month'],
+        'day' => $context['day']
+      )
+    );
+
   if (!empty($context['area'])) {
     $form->addHiddenInput('area', $context['area']);
   }
@@ -326,12 +337,14 @@ function print_search($context)
   $input = new ElementInputSearch();
   $search_vocab = get_vocab('search');
 
-  $input->setAttributes(array(
-    'name'        => 'search_str',
-    'placeholder' => $search_vocab,
-    'aria-label'  => $search_vocab,
-    'required'    => true
-  ));
+  $input->setAttributes(
+    array(
+      'name' => 'search_str',
+      'placeholder' => $search_vocab,
+      'aria-label' => $search_vocab,
+      'required' => true
+    )
+  );
 
   $form->addElement($input);
 
@@ -375,7 +388,7 @@ function print_report_link(User $user)
   if (checkAuthorised('report.php', true)) {
     $attributes = array('action' => multisite('report.php'));
     $hidden_inputs = array(
-      'phase'        => '2',
+      'phase' => '2',
       'creatormatch' => $user->username
     );
   } elseif (checkAuthorised('search.php', true)) {
@@ -395,10 +408,12 @@ function print_report_link(User $user)
     ->addHiddenInputs($hidden_inputs);
 
   $submit = new ElementInputSubmit();
-  $submit->setAttributes(array(
-    'title' => get_vocab('show_my_entries'),
-    'value' => $user->display_name
-  ));
+  $submit->setAttributes(
+    array(
+      'title' => get_vocab('show_my_entries'),
+      'value' => $user->display_name
+    )
+  );
   $form->addElement($submit);
 
   $form->render();
@@ -425,11 +440,13 @@ function print_logonoff_button()
   }
 
   $form = new Form();
-  $form->setAttributes(array(
-    'id' => 'header_logonoff',
-    'method' => $params['method'],
-    'action' => $params['action']
-  ));
+  $form->setAttributes(
+    array(
+      'id' => 'header_logonoff',
+      'method' => $params['method'],
+      'action' => $params['action']
+    )
+  );
 
   // A Get method will replace the query string in the action URL with a query
   // string made up of the hidden inputs.  So put any parameters in the action
@@ -460,11 +477,13 @@ function print_end_kiosk_button()
   $params = array();
 
   $form = new Form();
-  $form->setAttributes(array(
-    'id' => 'header_end_kiosk',
-    'method' => "post",
-    'action' => "kiosk.php?kiosk=" . $_GET["kiosk"] . "&area=" . $_GET["area"] . "&room=" . $_GET["room"]
-  ));
+  $form->setAttributes(
+    array(
+      'id' => 'header_end_kiosk',
+      'method' => "post",
+      'action' => "kiosk.php?kiosk=" . $_GET["kiosk"] . "&area=" . $_GET["area"] . "&room=" . $_GET["room"]
+    )
+  );
 
   // Add the hidden fields
   if (isset($params['hidden_inputs'])) {
@@ -569,23 +588,22 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
   // Put some data attributes in the body element for the benefit of JavaScript.  Note that we
   // cannot use these PHP variables directly in the JavaScript files as those files are cached.
   $data = array(
-    'view'          => $context['view'],
-    'view_all'      => $context['view_all'],
-    'area'          => $context['area'],
-    'room'          => $context['room'],
-    'page'          => $page,
-    'page-date'     => format_iso_date($context['year'], $context['month'], $context['day']),
-    'is-admin'      => (is_admin()) ? 'true' : 'false',
+    'view' => $context['view'],
+    'view_all' => $context['view_all'],
+    'area' => $context['area'],
+    'room' => $context['room'],
+    'page' => $page,
+    'page-date' => format_iso_date($context['year'], $context['month'], $context['day']),
+    'is-admin' => (is_admin()) ? 'true' : 'false',
     'is-book-admin' => (is_book_admin()) ? 'true' : 'false',
-    'lang-prefs'    => json_encode(get_lang_preferences())
+    'lang-prefs' => json_encode(get_lang_preferences())
   );
 
   if ($multisite && isset($site) && ($site !== '')) {
     $data['site'] = $site;
   }
 
-  if (isset($context['kiosk']))
-  {
+  if (isset($context['kiosk'])) {
     $data['kiosk'] = $context['kiosk'];
   }
 
@@ -604,12 +622,10 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
   }
 
   // To help styling
-  if ($view_week_number)
-  {
+  if (isset($view_week_number) && $view_week_number) {
     $classes[] = 'view_week_number';
   }
-  if ($style_weekends)
-  {
+  if ($style_weekends) {
     $classes[] = 'style_weekends';
   }
 
@@ -634,7 +650,7 @@ function print_theme_header($context = null, $simple = false, $omit_login = fals
 function build_query($context)
 {
   $vars = array(
-    'view'  => $context['view'],
+    'view' => $context['view'],
     'page_date' => format_iso_date($context['year'], $context['month'], $context['day'])
   );
 
