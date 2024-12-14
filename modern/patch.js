@@ -264,10 +264,14 @@ function patchMainPage() {
     // day selector 
     patchElements(document.getElementsByClassName("arrow"), element => {
         patchElements(element.childNodes, function (childNode) {
-            if (childNode.className === "prev")
-                childNode.innerHTML = "<span data-feather=\"chevron-left\"></span>"
-            else if (childNode.className === "next")
-                childNode.innerHTML = "<span data-feather=\"chevron-right\"></span>"
+            if(!childNode.classList)
+                return;
+
+            const chevron = childNode.classList.contains("week") ? "chevrons" : "chevron"
+            const direction = childNode.classList.contains("prev") ? "left" : "right"
+
+            if(childNode.classList.contains("prev") || childNode.classList.contains("next"))
+                childNode.innerHTML = `<span data-feather="${chevron}-${direction}"></span>`
 
             childNode.className = "btn btn-sm btn-outline-secondary"
             //element.innerHTML = "<span aria-hidden=\"true\">&laquo;</span>"
